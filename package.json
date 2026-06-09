@@ -1,0 +1,16 @@
+{
+  "name": "grant-platform-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "worker": "node worker/index.js"
+  },
+  "dependencies": {
+    "bullmq": "^4.0.0",
+    "ioredis": "^5.3.2",
+    "next": "14.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+}
