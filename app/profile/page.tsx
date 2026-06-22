@@ -1,7 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProfileSection from "./components/ProfileSection";
+
+// Temporary replacement for missing ProfileSection component
+function ProfileSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow mb-8">
+      <h2 className="text-xl font-semibold mb-2">{title}</h2>
+      {description && (
+        <p className="text-gray-600 text-sm mb-4">{description}</p>
+      )}
+      <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
