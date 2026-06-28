@@ -1,29 +1,27 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 
-export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return new Response("Unauthorized", { status: 401 });
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await prisma.savedGrant.delete({
+      where: { id: params.id },
+    })
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Delete Saved Grant Error:", err);
+    return NextResponse.json(
+      { error: "Failed to delete saved grant" },
+      { status: 500 }
+    );
   }
-
-  const { grantId } = await req.json();
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
-
-  if (!user) return new Response("Unauthorized", { status: 401 });
-
-  await prisma.savedGrant.create({
-    data: {
-      userId: user.id,
-      grantId,
-      title: "",
-    },
-  });
-
-  return new Response("OK");
 }
