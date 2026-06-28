@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -8,7 +8,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { grantIds } = await req.json();
+  const { grantIds, workspaceId } = await req.json();
+
+  if (!workspaceId) {
+    return NextResponse.json(
+      { error: "workspaceId is required" },
+      { status: 400 }
+    );
+  }
 
   if (!Array.isArray(grantIds) || grantIds.length < 2) {
     return NextResponse.json(
@@ -20,6 +27,7 @@ export async function POST(req: Request) {
   const comparison = await prisma.grantComparison.create({
     data: {
       userId,
+      workspaceId,
       grantIds,
     },
   });
